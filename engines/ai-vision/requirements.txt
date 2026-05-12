@@ -1,0 +1,6 @@
+﻿numpy
+pandas
+opencv-python
+tensorflow
+torch
+fastapi
