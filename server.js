@@ -1,40 +1,46 @@
-﻿const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const dotenv = require('dotenv');
-const mongoose = require('mongoose');
+﻿
+const express = require("express");
+const path = require("path");
 
-// 엔진 로드
-const setupSecurity = require('./engines/guardian/security-config');
-const setupAuctionSocket = require('./engines/market/auction-engine');
+// 1. 존재하는 엔진 라우트만 가져오기
+const bioAxis = require("./engines/bio-axis/index.js");
+const market = require("./engines/market/index.js");
+const nexus = require("./engines/nexus/index.js");
+// guardian은 index.js가 없으므로 auth-routes.js를 임시로 메인으로 사용하거나 
+// 라우트가 필요 없다면 일단 제외합니다.
+const guardianRoutes = require("./engines/guardian/auth-routes.js");
 
-dotenv.config();
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
 
-// DB 연결 (HEXIS 전용 클러스터)
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/hexis')
-    .then(() => console.log('HEXIS Core Database Connected'))
-    .catch(err => console.error('Database Error:', err));
-
-// 미들웨어 및 보안 설정
-setupSecurity(app);
+// 2. 미들웨어 설정
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "public"))); 
 
-// API 라우트 매핑 (HEXIS 하이퍼-코어 구성)
-app.use('/api/guardian', require('./engines/guardian/auth-routes'));
-app.use('/api/bio-axis', require('./engines/bio-axis/index'));
-app.use('/api/market', require('./engines/market/index'));
-app.use('/api/nexus', require('./engines/nexus/index'));
+// 3. API 라우팅 연결
+app.use("/api/bio-axis", bioAxis);
+app.use("/api/market", market);
+app.use("/api/nexus", nexus);
+app.use("/api/guardian", guardianRoutes);
 
-// 실시간 엔진 기동
-setupAuctionSocket(io);
+// 4. DB 연결 설정 (User.js에 정의된 sequelize 인스턴스를 활용)
+// 목록에 User.js가 있으므로 이를 통해 DB에 접근합니다.
+const { sequelize } = require("./engines/guardian/User.js");
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log('--------------------------------------------');
-    console.log('   HEXIS: Rare Pet Ecosystem Active   ');
-    console.log(\   Access Point: http://localhost:\  \);
-    console.log('--------------------------------------------');
-});
+const PORT = 3000;
+
+async function startServer() {
+    try {
+        await sequelize.sync();
+        app.listen(PORT, () => {
+            console.log("--------------------------------------------");
+            console.log("  HEXIS: Full Ecosystem Active (v1.8)");
+            console.log("  ✔ Dashboard: http://localhost:3000");
+            console.log("--------------------------------------------");
+        });
+    } catch (err) {
+        console.error("❌ 서버 시작 실패:", err);
+    }
+}
+
+startServer();
+

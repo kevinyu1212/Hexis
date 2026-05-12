@@ -1,46 +1,51 @@
-﻿const express = require('express');
+﻿
+const express = require("express");
 const router = express.Router();
-const Specimen = require('./Specimen');
-const { protect } = require('../guardian/auth');
-const controller = require('./controller');
+const multer = require("multer");
+const path = require("path");
+const Specimen = require("../guardian/Specimen");
+const { protect } = require("../guardian/auth");
 
-// 분석 컨트롤러 연결
-router.use('/sync', controller);
+// 이미지 저장 설정
+const storage = multer.diskStorage({
+    destination: "./uploads/",
+    filename: (req, file, cb) => {
+        cb(null, "HEX-" + Date.now() + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
 
-// [POST] 새 개체 등록
-router.post('/register', protect, async (req, res) => {
+// 1. 개체 등록 (가계도 정보 FatherId, MotherId 포함)
+router.post("/register", protect, async (req, res) => {
     try {
-        const { nickname, species, category } = req.body;
-        const hexisTag = \HEX-\-\\;
-
+        const { hexisTag, species, morph, FatherId, MotherId } = req.body;
         const newSpecimen = await Specimen.create({
-            ...req.body,
-            ownerId: req.user.id,
-            hexisTag
+            hexisTag,
+            species,
+            morph,
+            FatherId,
+            MotherId,
+            OwnerId: req.user.id
         });
-
-        res.status(201).json({ status: 'success', data: newSpecimen });
+        res.status(201).json({ status: "success", data: newSpecimen });
     } catch (error) {
-        res.status(400).json({ status: 'fail', message: error.message });
+        res.status(400).json({ status: "fail", message: error.message });
     }
 });
 
-// [GET] 요약 대시보드 데이터
-router.get('/dashboard-summary', protect, async (req, res) => {
+// 2. 개체 사진 업로드
+router.post("/upload/:id", protect, upload.single("image"), async (req, res) => {
     try {
-        const specimens = await Specimen.find({ ownerId: req.user.id });
-        const summary = {
-            totalCount: specimens.length,
-            needsAttention: specimens.filter(s => s.healthStatus !== 'Optimal').length,
-            upcomingMolts: specimens.filter(s => {
-                const dDay = (new Date(s.nextMoltPredict) - new Date()) / (1000 * 60 * 60 * 24);
-                return dDay > 0 && dDay <= 7;
-            }).length
-        };
-        res.json({ status: 'success', summary });
+        const specimen = await Specimen.findByPk(req.params.id);
+        if (!specimen || specimen.OwnerId !== req.user.id) {
+            return res.status(403).json({ message: "권한이 없습니다." });
+        }
+        const imageUrl = "/uploads/" + req.file.filename;
+        res.status(200).json({ status: "success", url: imageUrl });
     } catch (error) {
-        res.status(500).json({ status: 'fail', message: error.message });
+        res.status(400).json({ status: "fail", message: error.message });
     }
 });
 
 module.exports = router;
+
