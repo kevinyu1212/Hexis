@@ -14,7 +14,8 @@ app.use('/api/', apiLimiter);
 app.use(express.json());
 
 // 2. 엔진별 경로 조립
-app.use('/api/admin', adminRoutes); // 관리자 엔진 연결
+app.use('/api/admin', adminRoutes);
+app.use('/api/bio-axis', require('./engines/bio-axis/index')); // 관리자 엔진 연결
 
 app.get('/', (req, res) => {
     res.send('HEXIS System Core - Operational');
