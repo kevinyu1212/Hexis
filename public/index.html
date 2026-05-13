@@ -2,103 +2,143 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>HEXIS Ecosystem Hub</title>
+    <title>HEXIS Social Hub</title>
     <style>
-        :root { --bg: #020617; --card: #1e293b; --accent: #2dd4bf; --text: #f8fafc; --glass: rgba(255, 255, 255, 0.03); }
-        body { 
-            background: var(--bg); 
-            color: var(--text); 
-            font-family: 'Pretendard', sans-serif; 
-            margin: 0; 
+        :root { --bg: #020617; --card: #1e293b; --accent: #2dd4bf; --text: #f8fafc; --sub: #94a3b8; }
+        body { background: var(--bg); color: var(--text); font-family: 'Pretendard', sans-serif; margin: 0; padding: 0; }
+        
+        /* 네비게이션 */
+        .nav { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #334155; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--accent); text-decoration: none; }
+        
+        /* 상단 배너 */
+        .hero-banner { 
+            width: 100%; 
+            height: 250px; 
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
             display: flex; 
             flex-direction: column; 
+            justify-content: center; 
             align-items: center; 
-            min-height: 100vh;
-            background-image: radial-gradient(circle at 50% 20%, #1e293b 0%, #020617 80%);
-        }
-        .header { text-align: center; padding: 60px 20px; }
-        .header h1 { font-size: 3rem; margin: 0; letter-spacing: -1px; color: var(--accent); }
-        .header p { color: #94a3b8; margin-top: 10px; font-size: 1.1rem; }
-
-        .menu-grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 25px; 
-            max-width: 900px; 
-            width: 90%;
-            margin-bottom: 50px;
-        }
-        .menu-item { 
-            background: var(--card); 
-            padding: 40px 30px; 
-            border-radius: 24px; 
-            border: 1px solid #334155; 
-            text-decoration: none; 
-            color: var(--text); 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            text-align: center;
+            border-bottom: 1px solid #334155;
             position: relative;
             overflow: hidden;
         }
-        .menu-item:hover { 
-            border-color: var(--accent); 
-            transform: translateY(-10px); 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(45, 212, 191, 0.1);
-            background: #1e2945;
+        .hero-banner::before {
+            content: '🦎'; font-size: 10rem; position: absolute; opacity: 0.05; right: -20px; bottom: -20px; transform: rotate(-15deg);
         }
-        .menu-item .icon { font-size: 3.5rem; margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1)); }
-        .menu-item b { font-size: 1.4rem; margin-bottom: 8px; color: var(--accent); }
-        .menu-item span { color: #94a3b8; font-size: 0.9rem; }
+        .hero-banner h2 { font-size: 2.5rem; margin: 0; color: var(--accent); }
+        .hero-banner p { color: var(--sub); font-size: 1.1rem; margin-top: 10px; }
+
+        .container { max-width: 1200px; margin: 40px auto; display: grid; grid-template-columns: 280px 1fr 300px; gap: 30px; padding: 0 20px; min-height: 600px; }
         
-        .status-dot {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--accent);
-        }
+        /* 사이드바 및 피드 스타일 */
+        .sidebar-left .menu-card, .sidebar-right .trend-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid #334155; position: sticky; top: 100px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; color: var(--text); text-decoration: none; margin-bottom: 5px; transition: 0.3s; }
+        .nav-item:hover { background: rgba(45, 212, 191, 0.1); color: var(--accent); }
+        
+        .post-box, .post-card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #334155; }
+        .post-input { background: #0f172a; border: 1px solid #334155; border-radius: 12px; width: 100%; padding: 15px; color: white; box-sizing: border-box; font-family: inherit; }
+        .btn-post { background: var(--accent); color: #020617; border: none; padding: 10px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; float: right; margin-top: 10px; }
+
+        /* 하단 푸터 */
+        .footer { background: #0f172a; border-top: 1px solid #334155; padding: 60px 40px; margin-top: 100px; }
+        .footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; }
+        .footer-column h4 { color: var(--accent); margin-bottom: 20px; }
+        .footer-column ul { list-style: none; padding: 0; margin: 0; }
+        .footer-column li { margin-bottom: 10px; color: var(--sub); font-size: 0.9rem; cursor: pointer; }
+        .footer-column li:hover { color: var(--accent); }
+        .footer-bottom { max-width: 1200px; margin: 40px auto 0; padding-top: 20px; border-top: 1px solid #1e293b; text-align: center; color: #475569; font-size: 0.8rem; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🦎 HEXIS HUB</h1>
-        <p>Next-Generation Reptile Ecosystem Management</p>
+    <nav class="nav">
+        <a href="index.html" class="logo">🦎 HEXIS SOCIAL</a>
+        <div style="color: var(--sub);">Breeder <strong>Kim</strong> 님 환영합니다</div>
+    </nav>
+
+    <!-- 상단 배너 섹션 -->
+    <header class="hero-banner">
+        <h2>Premium Reptile Ecosystem</h2>
+        <p>가장 정밀한 유전 분석과 투명한 마켓플레이스를 경험하세요</p>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar-left">
+            <div class="menu-card">
+                <h3 style="font-size:0.8rem; color:var(--sub); text-transform:uppercase;">Core Services</h3>
+                <a href="specimen.html" class="nav-item"><span>🧬</span> Specimen</a>
+                <a href="market.html" class="nav-item"><span>💰</span> Live Market</a>
+                <a href="nexus.html" class="nav-item"><span>🌳</span> Nexus Explorer</a>
+                <a href="calc.html" class="nav-item"><span>🧮</span> Morph Calc</a>
+            </div>
+        </aside>
+
+        <main class="feed-section">
+            <div class="post-box">
+                <textarea class="post-input" rows="3" placeholder="오늘의 개체 소식을 들려주세요..."></textarea>
+                <button class="btn-post" onclick="alert('게시되었습니다!')">Post Feed</button>
+                <div style="clear:both;"></div>
+            </div>
+
+            <div id="feedList">
+                <div class="post-card">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+                        <div style="width:40px; height:40px; background:#334155; border-radius:50%;"></div>
+                        <div><strong>LillyMaster</strong> <small style="color:var(--sub);">• 2시간 전</small></div>
+                    </div>
+                    <div style="line-height:1.6; color:#e2e8f0;">Lilly White 고퀄리티 개체들 오늘 메인 마켓에 대거 등록 예정입니다! 다들 기대해주세요.</div>
+                </div>
+            </div>
+        </main>
+
+        <aside class="sidebar-right">
+            <div class="trend-card">
+                <h3 style="font-size:0.8rem; color:var(--sub); text-transform:uppercase;">Market Alert</h3>
+                <div style="padding:15px; background:#0f172a; border-radius:12px; margin-top:10px;">
+                    <div style="font-size:0.8rem; color:var(--sub);">진행 중인 경매</div>
+                    <div style="font-size:1.1rem; font-weight:bold; color:var(--accent); margin:5px 0;">HEX-BABY-001</div>
+                    <div style="color:#f43f5e; font-weight:bold;">₩720,000</div>
+                </div>
+            </div>
+        </aside>
     </div>
 
-    <div class="menu-grid">
-        <a href="specimen.html" class="menu-item">
-            <div class="status-dot"></div>
-            <div class="icon">🧬</div>
-            <b>Specimen</b>
-            <span>새로운 개체 등록 및 관리</span>
-        </a>
-        <a href="market.html" class="menu-item">
-            <div class="status-dot" style="background: #f43f5e; box-shadow: 0 0 10px #f43f5e;"></div>
-            <div class="icon">💰</div>
-            <b>Market</b>
-            <span>실시간 프리미엄 경매 참여</span>
-        </a>
-        <a href="nexus.html" class="menu-item">
-            <div class="status-dot"></div>
-            <div class="icon">🌳</div>
-            <b>Nexus</b>
-            <span>유전 계보 및 가계도 탐색</span>
-        </a>
-        <a href="calc.html" class="menu-item">
-            <div class="status-dot" style="background: #6366f1; box-shadow: 0 0 10px #6366f1;"></div>
-            <div class="icon">🧮</div>
-            <b>Calculator</b>
-            <span>모프 확률 분석 및 계산</span>
-        </a>
-    </div>
-
-    <footer style="color: #475569; font-size: 0.8rem; margin-bottom: 40px;">
-        &copy; 2026 HEXIS ECOSYSTEM. All rights reserved.
+    <!-- 하단 푸터 섹션 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h4>HEXIS Ecosystem</h4>
+                <p style="font-size:0.8rem; color:var(--sub); line-height:1.6;">파충류 브리더를 위한 차세대 유전 관리 및 마켓 통합 솔루션입니다.</p>
+            </div>
+            <div class="footer-column">
+                <h4>Service</h4>
+                <ul>
+                    <li>개체 등록 관리</li>
+                    <li>실시간 경매 시스템</li>
+                    <li>가계도 분석 도구</li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Support</h4>
+                <ul>
+                    <li>이용약관</li>
+                    <li>개인정보처리방침</li>
+                    <li>고객센터</li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Contact</h4>
+                <ul>
+                    <li>Email: info@hexis.ai</li>
+                    <li>Phone: 02-1234-5678</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 HEXIS ADVANCED SYSTEM. All rights reserved.
+        </div>
     </footer>
 </body>
 </html>
