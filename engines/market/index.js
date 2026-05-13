@@ -1,48 +1,25 @@
 ﻿
 const express = require("express");
 const router = express.Router();
-const Auction = require("../guardian/Auction");
-const Specimen = require("../guardian/Specimen");
-const { protect } = require("../guardian/auth");
+let auctions = [
+    { id: 1, name: "HEX-20260512-7116", morph: "Lilly White", currentPrice: 610000, bids: 5 },
+    { id: 2, name: "HEX-BABY-001", morph: "Lilly White (Gen 2)", currentPrice: 500000, bids: 2 }
+];
 
-// 1. 모든 경매 목록 조회 (새로 추가)
-router.get("/auctions", async (req, res) => {
-    try {
-        const auctions = await Auction.findAll({
-            include: [{ model: Specimen, attributes: ["hexisTag", "morph"] }]
-        });
-        res.status(200).json({ status: "success", data: auctions });
-    } catch (error) {
-        res.status(400).json({ status: "fail", message: error.message });
-    }
+router.get("/auctions", (req, res) => {
+    res.json(auctions);
 });
 
-// 2. 보증서가 포함된 경매 등록
-router.post("/auction", protect, async (req, res) => {
-    try {
-        const { specimenId, startPrice, endTime } = req.body;
-        const specimen = await Specimen.findByPk(specimenId);
-        
-        if (!specimen || specimen.OwnerId !== req.user.id) {
-            return res.status(403).json({ message: "내 개체만 경매에 올릴 수 있습니다." });
-        }
-
-        const certUrl = "/uploads/cert-" + specimenId + ".png";
-
-        const newAuction = await Auction.create({
-            startPrice,
-            currentPrice: startPrice,
-            endTime,
-            SpecimenId: specimenId,
-            status: "active",
-            note: certUrl 
-        });
-
-        res.status(201).json({ status: "success", data: newAuction, certificate: certUrl });
-    } catch (error) {
-        res.status(400).json({ status: "fail", message: error.message });
+router.post("/bid", (req, res) => {
+    const { auctionId, bidAmount } = req.body;
+    const auction = auctions.find(a => a.id === auctionId);
+    if (!auction) return res.status(404).json({ error: "경매를 찾을 수 없습니다." });
+    if (bidAmount <= auction.currentPrice) {
+        return res.status(400).json({ error: "현재가보다 높은 금액을 입력해야 합니다." });
     }
+    auction.currentPrice = bidAmount;
+    auction.bids += 1;
+    res.json({ success: true, updatedAuction: auction });
 });
-
 module.exports = router;
 

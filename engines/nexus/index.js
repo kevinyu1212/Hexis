@@ -1,41 +1,21 @@
 ﻿
 const express = require("express");
 const router = express.Router();
-const Specimen = require("../guardian/Specimen");
 
-// 모든 개체 목록 조회
-router.get("/specimens", async (req, res) => {
-    try {
-        const specimens = await Specimen.findAll();
-        res.status(200).json({ status: "success", data: specimens });
-    } catch (error) {
-        res.status(400).json({ status: "fail", message: error.message });
+// 가계도 샘플 데이터 (나중에 DB 연동 가능)
+const lineageData = {
+    id: "HEX-BABY-001",
+    name: "HEX-BABY-001",
+    morph: "Lilly White (Gen 2)",
+    parents: {
+        father: { id: "HEX-20260512-7116", name: "Papa Lilly", morph: "Lilly White" },
+        mother: { id: "HEX-MOM-999", name: "Mama Crest", morph: "Normal Patch" }
     }
-});
+};
 
-// 특정 개체의 2대 가계도(부모) 조회
-router.get("/lineage/:id", async (req, res) => {
-    try {
-        const specimen = await Specimen.findByPk(req.params.id);
-        if (!specimen) return res.status(404).json({ message: "개체 정보를 찾을 수 없습니다." });
-
-        const father = specimen.FatherId ? await Specimen.findByPk(specimen.FatherId) : null;
-        const mother = specimen.MotherId ? await Specimen.findByPk(specimen.MotherId) : null;
-
-        res.status(200).json({
-            status: "success",
-            target: {
-                tag: specimen.hexisTag,
-                morph: specimen.morph
-            },
-            family: {
-                father: father ? { tag: father.hexisTag, morph: father.morph } : "Unknown",
-                mother: mother ? { tag: mother.hexisTag, morph: mother.morph } : "Unknown"
-            }
-        });
-    } catch (error) {
-        res.status(400).json({ status: "fail", message: error.message });
-    }
+router.get("/lineage/:id", (req, res) => {
+    // 실제로는 파라미터 :id로 검색하지만, 지금은 샘플을 반환합니다.
+    res.json(lineageData);
 });
 
 module.exports = router;
