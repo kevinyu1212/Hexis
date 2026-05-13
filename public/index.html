@@ -2,66 +2,103 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>HEXIS Full Ecosystem</title>
+    <title>HEXIS Ecosystem Hub</title>
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --accent: #2dd4bf; --text: #f8fafc; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 20px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; }
-        .full-row { grid-column: 1 / -1; margin-top: 20px; }
-        .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #334155; }
-        h2 { color: var(--accent); margin-top: 0; display: flex; align-items: center; gap: 10px; }
-        .lineage-box { display: flex; justify-content: space-around; align-items: center; background: #0f172a; padding: 40px; border-radius: 15px; min-height: 100px; }
-        .node { padding: 15px; border: 2px solid var(--accent); border-radius: 10px; width: 160px; text-align: center; background: #1e293b; }
-        .arrow { font-size: 2rem; color: #64748b; }
-        .price { color: #4ade80; font-weight: bold; }
-        input { padding: 10px; border-radius: 6px; border: none; width: 200px; }
-        button { padding: 10px 20px; border-radius: 6px; border: none; background: var(--accent); font-weight: bold; cursor: pointer; }
+        :root { --bg: #020617; --card: #1e293b; --accent: #2dd4bf; --text: #f8fafc; --glass: rgba(255, 255, 255, 0.03); }
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'Pretendard', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 50% 20%, #1e293b 0%, #020617 80%);
+        }
+        .header { text-align: center; padding: 60px 20px; }
+        .header h1 { font-size: 3rem; margin: 0; letter-spacing: -1px; color: var(--accent); }
+        .header p { color: #94a3b8; margin-top: 10px; font-size: 1.1rem; }
+
+        .menu-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 25px; 
+            max-width: 900px; 
+            width: 90%;
+            margin-bottom: 50px;
+        }
+        .menu-item { 
+            background: var(--card); 
+            padding: 40px 30px; 
+            border-radius: 24px; 
+            border: 1px solid #334155; 
+            text-decoration: none; 
+            color: var(--text); 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .menu-item:hover { 
+            border-color: var(--accent); 
+            transform: translateY(-10px); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(45, 212, 191, 0.1);
+            background: #1e2945;
+        }
+        .menu-item .icon { font-size: 3.5rem; margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1)); }
+        .menu-item b { font-size: 1.4rem; margin-bottom: 8px; color: var(--accent); }
+        .menu-item span { color: #94a3b8; font-size: 0.9rem; }
+        
+        .status-dot {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+        }
     </style>
 </head>
 <body>
-    <h1 style="text-align:center; color: var(--accent);">🦎 HEXIS ECOSYSTEM v1.0</h1>
-    <div class="grid">
-        <div class="card">
-            <h2>🧬 Specimen</h2>
-            <div style="display: flex; gap: 10px;">
-                <input id="n" placeholder="개체 이름 입력">
-                <button onclick="alert('등록되었습니다!')">DB 저장</button>
-            </div>
-        </div>
-        <div class="card">
-            <h2>💰 Live Market</h2>
-            <div id="marketList">로딩 중...</div>
-        </div>
-        <div class="card full-row">
-            <h2>🌳 Lineage Explorer (Gen 2)</h2>
-            <div id="lineageArea" class="lineage-box">데이터를 불러오는 중...</div>
-        </div>
+    <div class="header">
+        <h1>🦎 HEXIS HUB</h1>
+        <p>Next-Generation Reptile Ecosystem Management</p>
     </div>
-    <script>
-        async function loadData() {
-            try {
-                // 1. 경매 데이터 로드
-                const mRes = await fetch('/api/market/auctions');
-                const mData = await mRes.json();
-                document.getElementById('marketList').innerHTML = mData.map(function(a) {
-                    return '<div style="padding:8px; border-bottom:1px solid #334155;">' + a.name + ' - <span class="price">₩' + a.currentPrice.toLocaleString() + '</span></div>';
-                }).join('');
 
-                // 2. 가계도 데이터 로드
-                const lRes = await fetch('/api/nexus/lineage/HEX-BABY-001');
-                const lData = await lRes.json();
-                document.getElementById('lineageArea').innerHTML = 
-                    '<div class="node"><small>FATHER</small><br><b>' + lData.parents.father.name + '</b></div>' +
-                    '<div class="arrow">+</div>' +
-                    '<div class="node"><small>MOTHER</small><br><b>' + lData.parents.mother.name + '</b></div>' +
-                    '<div class="arrow">➔</div>' +
-                    '<div class="node" style="background:var(--accent); color:#0f172a;"><small>TARGET</small><br><b>' + lData.name + '</b></div>';
-            } catch (e) {
-                console.error('Error loading data:', e);
-                document.getElementById('marketList').innerText = '데이터 로드 실패';
-            }
-        }
-        loadData();
-    </script>
+    <div class="menu-grid">
+        <a href="specimen.html" class="menu-item">
+            <div class="status-dot"></div>
+            <div class="icon">🧬</div>
+            <b>Specimen</b>
+            <span>새로운 개체 등록 및 관리</span>
+        </a>
+        <a href="market.html" class="menu-item">
+            <div class="status-dot" style="background: #f43f5e; box-shadow: 0 0 10px #f43f5e;"></div>
+            <div class="icon">💰</div>
+            <b>Market</b>
+            <span>실시간 프리미엄 경매 참여</span>
+        </a>
+        <a href="nexus.html" class="menu-item">
+            <div class="status-dot"></div>
+            <div class="icon">🌳</div>
+            <b>Nexus</b>
+            <span>유전 계보 및 가계도 탐색</span>
+        </a>
+        <a href="calc.html" class="menu-item">
+            <div class="status-dot" style="background: #6366f1; box-shadow: 0 0 10px #6366f1;"></div>
+            <div class="icon">🧮</div>
+            <b>Calculator</b>
+            <span>모프 확률 분석 및 계산</span>
+        </a>
+    </div>
+
+    <footer style="color: #475569; font-size: 0.8rem; margin-bottom: 40px;">
+        &copy; 2026 HEXIS ECOSYSTEM. All rights reserved.
+    </footer>
 </body>
 </html>

@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>HEXIS Morph Calculator</title>
+    <style>
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #6366f1; --text: #f8fafc; --neon: #2dd4bf; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 40px; text-align: center; }
+        .container { max-width: 600px; margin: auto; background: var(--card); padding: 30px; border-radius: 20px; border: 1px solid #444; }
+        .calc-row { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 20px 0; }
+        input { padding: 12px; border-radius: 8px; border: 1px solid var(--neon); background: #0f172a; color: white; width: 40%; }
+        button { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        #result { margin-top: 30px; padding: 20px; border-radius: 10px; background: #0f172a; color: var(--neon); font-size: 1.2rem; min-height: 50px; }
+        .back-btn { display: block; margin-bottom: 20px; color: var(--neon); text-decoration: none; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← 메인 허브로 이동</a>
+    <div class="container">
+        <h2>🧮 Morph Calculator</h2>
+        <p>부모의 모프를 입력하면 유전 확률을 계산합니다.</p>
+        <div class="calc-row">
+            <input id="f" placeholder="Father (수컷)">
+            <span style="font-size: 1.5rem;">×</span>
+            <input id="m" placeholder="Mother (암컷)">
+        </div>
+        <button onclick="calculate()">Probability Analyze</button>
+        <div id="result">결과가 여기에 표시됩니다.</div>
+    </div>
+    <script>
+        function calculate() {
+            const f = document.getElementById('f').value.toLowerCase();
+            const m = document.getElementById('m').value.toLowerCase();
+            let res = "일반(Normal) 확률이 높습니다.";
+            
+            if(f.includes('lilly') || m.includes('lilly')) {
+                res = "🧬 분석 결과: Lilly White (50%), Normal (50%)";
+            } else if(f.includes('cap') || m.includes('cap')) {
+                res = "🧬 분석 결과: Cappuccino (50%), Normal (50%)";
+            }
+            
+            document.getElementById('result').innerText = res;
+        }
+    </script>
+</body>
+</html>

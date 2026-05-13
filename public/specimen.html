@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>HEXIS Specimen</title>
+    <style>
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #2dd4bf; --text: #f8fafc; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 40px; display: flex; flex-direction: column; align-items: center; }
+        .container { background: var(--card); padding: 30px; border-radius: 15px; border: 1px solid #334155; width: 100%; max-width: 500px; }
+        h2 { color: var(--accent); margin-top: 0; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: var(--accent); color: #0f172a; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .back-btn { align-self: flex-start; color: var(--accent); text-decoration: none; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← 메인 허브로 이동</a>
+    <div class="container">
+        <h2>🧬 Register Specimen</h2>
+        <label>개체 식별 번호 (ID)</label>
+        <input type="text" id="sid" placeholder="예: HEX-2026-001">
+        <label>모프 (Morph)</label>
+        <input type="text" id="smorph" placeholder="예: Lilly White">
+        <label>성별</label>
+        <select id="sgender">
+            <option value="Male">수컷 (Male)</option>
+            <option value="Female">암컷 (Female)</option>
+            <option value="Unknown">미구분</option>
+        </select>
+        <button onclick="register()">HEXIS DB에 등록</button>
+    </div>
+    <script>
+        function register() {
+            const id = document.getElementById('sid').value;
+            if(!id) return alert('ID를 입력해주세요.');
+            alert(id + ' 개체가 성공적으로 등록되었습니다!');
+            location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

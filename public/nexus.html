@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>HEXIS Nexus Explorer</title>
+    <style>
+        :root { --bg: #020617; --accent: #2dd4bf; --node: #1e293b; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 40px; text-align: center; }
+        .tree-wrapper { display: flex; flex-direction: column; align-items: center; margin-top: 60px; }
+        .row { display: flex; gap: 60px; position: relative; }
+        .node { background: var(--node); border: 2px solid #334155; padding: 25px; border-radius: 20px; width: 200px; transition: 0.4s; }
+        .node.active { border-color: var(--accent); box-shadow: 0 0 30px rgba(45, 212, 191, 0.2); transform: scale(1.05); }
+        .label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .name { display: block; font-size: 1.2rem; font-weight: bold; color: var(--accent); margin: 10px 0; }
+        .line { width: 2px; height: 50px; background: linear-gradient(to bottom, #334155, var(--accent)); margin: 10px 0; }
+        .back-btn { color: var(--accent); text-decoration: none; font-weight: bold; position: absolute; top: 40px; left: 40px; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← Lobby Hub</a>
+    <h1>🌳 Lineage Genealogy</h1>
+    <p style="color: #94a3b8;">분석된 데이터를 바탕으로 한 2세대 유전 계보 트리입니다.</p>
+    <div class="tree-wrapper" id="treeArea"></div>
+    <script>
+        fetch('/api/nexus/lineage/HEX-BABY-001')
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                var html = '<div class="row">' +
+                    '<div class="node"><span class="label">Father (♂)</span><span class="name">' + data.parents.father.name + '</span>' +
+                    '<div style="font-size:0.8rem; color:#64748b;">' + data.parents.father.morph + '</div></div>' +
+                    '<div class="node"><span class="label">Mother (♀)</span><span class="name">' + data.parents.mother.name + '</span>' +
+                    '<div style="font-size:0.8rem; color:#64748b;">' + data.parents.mother.morph + '</div></div>' +
+                    '</div>' +
+                    '<div class="line"></div>' +
+                    '<div class="node active"><span class="label">Target Specimen (Gen 2)</span>' +
+                    '<span class="name">' + data.name + '</span>' +
+                    '<div style="font-size:0.8rem; color:white;">' + data.morph + '</div></div>';
+                document.getElementById('treeArea').innerHTML = html;
+            });
+    </script>
+</body>
+</html>
